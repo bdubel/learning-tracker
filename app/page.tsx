@@ -41,12 +41,12 @@ export default function Home() {
   const { weeklyAgenda, learningPaths } = mockData
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4 max-w-6xl">
+    <div className="flex-1 overflow-y-auto">
+      <div className="container mx-auto py-8 px-8 max-w-5xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">Learning Tracker</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Weekly Overview</h1>
           <p className="text-muted-foreground mt-2">
-            Track your mastery-based learning paths
+            Your upcoming deadlines and learning progress
           </p>
         </div>
 
@@ -71,12 +71,7 @@ export default function Home() {
                   <CardContent>
                     <div className="flex gap-2">
                       <Button asChild variant="default" size="sm">
-                        <Link href={`/section/${item.id}`}>Continue</Link>
-                      </Button>
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/path/${item.pathName.toLowerCase().replace(/\s+/g, "-")}`}>
-                          View Path
-                        </Link>
+                        <Link href={`/path/applied-geography/section/${item.id}`}>Continue</Link>
                       </Button>
                     </div>
                   </CardContent>

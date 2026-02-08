@@ -160,7 +160,8 @@ function getDaysUntil(dateString: string) {
   return diff
 }
 
-export default function LearningPathPage({ params }: { params: { id: string } }) {
+export default async function LearningPathPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const path = mockPath
 
   if (!path) {
@@ -170,8 +171,8 @@ export default function LearningPathPage({ params }: { params: { id: string } })
   const progressPercentage = (path.completedSections / path.totalSections) * 100
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4 max-w-5xl">
+    <div className="flex-1 overflow-y-auto">
+      <div className="container mx-auto py-8 px-8 max-w-5xl">
         <div className="mb-6">
           <Button asChild variant="ghost" size="sm" className="mb-4">
             <Link href="/">← Back to Dashboard</Link>
