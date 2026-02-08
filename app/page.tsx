@@ -62,17 +62,17 @@ export default function Home() {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="container mx-auto py-8 px-8 max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Home</h1>
-          <p className="text-muted-foreground mt-2">
+      <div className="container mx-auto py-6 px-8 max-w-4xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">Home</h1>
+          <p className="text-muted-foreground text-sm mt-1">
             Your upcoming deadlines grouped by week
           </p>
         </div>
 
         {allItems.length === 0 ? (
           <Card>
-            <CardContent className="py-12 text-center">
+            <CardContent className="py-8 text-center">
               <p className="text-muted-foreground">No upcoming deadlines</p>
               <p className="text-sm text-muted-foreground mt-1">
                 You're all caught up!
@@ -80,7 +80,7 @@ export default function Home() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-6">
             {sortedWeeks.map(([weekKey, items]) => {
               const firstItem = items[0]
               const deadline = new Date(firstItem.section.deadline!)
@@ -90,10 +90,10 @@ export default function Home() {
 
               return (
                 <section key={weekKey}>
-                  <h2 className="text-xl font-semibold mb-4">
+                  <h2 className="text-sm font-semibold text-muted-foreground mb-2">
                     Week {weekOfYear}, {year} · {formatWeekRange(weekStart)}
                   </h2>
-                  <div className="grid gap-4">
+                  <div className="space-y-2">
                     {items.map(item => (
                       <SectionCard key={item.section.id} item={item} />
                     ))}
@@ -113,47 +113,41 @@ function SectionCard({ item }: { item: { section: any; daysUntil: number; isNext
   const deadline = new Date(section.deadline!)
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              {isNext && (
-                <Circle className="h-3 w-3 text-blue-600 fill-blue-600 shrink-0" />
-              )}
-              <CardDescription className="text-xs uppercase tracking-wider">
-                {section.pathName}
-              </CardDescription>
+    <Link href={`/path/${section.pathId}/section/${section.id}`}>
+      <Card className="hover:shadow-sm transition-shadow cursor-pointer">
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                {isNext && (
+                  <Circle className="h-2.5 w-2.5 text-blue-600 fill-blue-600 shrink-0" />
+                )}
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                  {section.pathName}
+                </span>
+              </div>
+              <h3 className="font-medium text-base mb-1">{section.name}</h3>
+              <p className="text-xs text-muted-foreground">
+                {deadline.toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </p>
             </div>
-            <CardTitle className="text-lg">{section.name}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Due {deadline.toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              })}
-            </p>
+            <Badge variant={daysUntil < 3 ? "destructive" : "secondary"} className="shrink-0">
+              {daysUntil < 0
+                ? `${Math.abs(daysUntil)}d`
+                : daysUntil === 0
+                ? "Today"
+                : daysUntil === 1
+                ? "1d"
+                : `${daysUntil}d`
+              }
+            </Badge>
           </div>
-          <Badge variant={daysUntil < 3 ? "destructive" : "secondary"} className="shrink-0 ml-4">
-            {daysUntil < 0
-              ? `${Math.abs(daysUntil)}d overdue`
-              : daysUntil === 0
-              ? "Due today"
-              : daysUntil === 1
-              ? "Due tomorrow"
-              : `${daysUntil} days`
-            }
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Button asChild size="sm">
-          <Link href={`/path/${section.pathId}/section/${section.id}`}>
-            Continue
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
