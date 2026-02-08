@@ -22,6 +22,7 @@ export const appliedGeographyData = {
           unitId: "unit-1",
           isUnlocked: true,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "1a-t1", content: "50 states spatially (use Seterra until you can do it without hints)", completed: false },
             { id: "1a-t2", content: "Major mountain ranges: Rockies, Appalachians, Sierra Nevada, Cascades, Great Plains", completed: false },
@@ -63,6 +64,7 @@ export const appliedGeographyData = {
           unitId: "unit-1",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "1b-t1", content: "Europe regions: Western, Eastern, Nordic, Balkans, Mediterranean", completed: false },
             { id: "1b-t2", content: "Middle East regions: Gulf States, Levant, North Africa, Turkey-Iran bookends", completed: false },
@@ -103,6 +105,7 @@ export const appliedGeographyData = {
           unitId: "unit-1",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "1c-t1", content: "All 32 NATO members and their locations", completed: false },
             { id: "1c-t2", content: "EU membership vs. NATO membership overlap", completed: false },
@@ -135,6 +138,7 @@ export const appliedGeographyData = {
           unitId: "unit-1",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             {
               id: "1d-t1",
@@ -191,6 +195,7 @@ export const appliedGeographyData = {
           unitId: "unit-2",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "2a-t1", content: "The big 5 chokepoints: Hormuz, Suez, Malacca, Bab el-Mandeb, Panama", completed: false },
             { id: "2a-t2", content: "Oil routes from Gulf to Europe, Asia, US", completed: false },
@@ -231,6 +236,7 @@ export const appliedGeographyData = {
           unitId: "unit-2",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "2b-t1", content: "All East and Southeast Asian countries", completed: false },
             { id: "2b-t2", content: "First Island Chain and Second Island Chain concepts", completed: false },
@@ -266,6 +272,7 @@ export const appliedGeographyData = {
           unitId: "unit-2",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "2c-t1", content: "Russia's fundamental geographic challenges", completed: false },
             { id: "2c-t2", content: "Baltic states and the Suwalki Gap", completed: false },
@@ -300,6 +307,7 @@ export const appliedGeographyData = {
           unitId: "unit-2",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "2d-t1", content: "Top oil-producing and oil-consuming countries", completed: false },
             { id: "2d-t2", content: "Oil vs. natural gas transport (tankers, pipelines, LNG)", completed: false },
@@ -343,6 +351,7 @@ export const appliedGeographyData = {
           unitId: "unit-3",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "3a-t1", content: "Sunni-majority vs. Shia-majority areas across the Middle East", completed: false },
             { id: "3a-t2", content: "Saudi-Iran rivalry and proxy conflicts", completed: false },
@@ -378,6 +387,7 @@ export const appliedGeographyData = {
           unitId: "unit-3",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "3b-t1", content: "Six geographic combatant commands: CENTCOM, EUCOM, INDOPACOM, AFRICOM, SOUTHCOM, NORTHCOM", completed: false },
             { id: "3b-t2", content: "Why command boundaries are drawn where they are", completed: false },
@@ -421,6 +431,7 @@ export const appliedGeographyData = {
           unitId: "unit-3",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "3c-t1", content: "Ottoman Empire: territory and post-WWI collapse", completed: false },
             { id: "3c-t2", content: "Sykes-Picot and artificial Middle East borders", completed: false },
@@ -456,6 +467,7 @@ export const appliedGeographyData = {
           unitId: "unit-3",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "3d-t1", content: "Comprehensive review of Units 1-3", completed: false },
             { id: "3d-t2", content: "Apply geographic reasoning to current news", completed: false },
@@ -488,6 +500,7 @@ export const appliedGeographyData = {
           unitId: "unit-4",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "4a-t1", content: "Build a geographically-informed travel bucket list", completed: false },
             { id: "4a-t2", content: "Terrain and climate factors that create distinctive landscapes", completed: false },
@@ -529,6 +542,7 @@ export const appliedGeographyData = {
           unitId: "unit-4",
           isUnlocked: false,
           isCompleted: false,
+          completedDate: null,
           topics: [
             { id: "4b-t1", content: "Practice applying geographic lens to any news story", completed: false },
             { id: "4b-t2", content: "Develop habit: place → locate → neighbors → terrain → strategic logic", completed: false },

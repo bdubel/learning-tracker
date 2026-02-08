@@ -26,7 +26,7 @@ function getDaysUntil(dateString: string) {
 
 export default function SectionPage({ params }: { params: Promise<{ id: string; sectionId: string }> }) {
   const { id, sectionId } = use(params)
-  const { getSectionById, toggleTopic, toggleRequirement, updateSectionDeadline } = useLearningData()
+  const { getSectionById, toggleTopic, toggleRequirement, updateSectionDeadline, completeSection } = useLearningData()
 
   const section = getSectionById(id, sectionId)
 
@@ -44,6 +44,10 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
 
   const handleDeadlineChange = (deadline: string | null) => {
     updateSectionDeadline(id, sectionId, deadline)
+  }
+
+  const handleCompleteSection = () => {
+    completeSection(id, sectionId)
   }
 
   const topicsCompleted = section.topics.filter(t => t.completed).length
@@ -240,9 +244,18 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
 
         {/* Actions */}
         <div className="flex justify-end gap-4 pb-8">
-          <Button disabled={!allRequirementsMet}>
-            {allRequirementsMet ? "Complete Section & Unlock Next" : "Complete All Requirements First"}
-          </Button>
+          {section.isCompleted ? (
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <span className="text-sm text-muted-foreground">
+                Completed {section.completedDate && new Date(section.completedDate).toLocaleDateString()}
+              </span>
+            </div>
+          ) : (
+            <Button disabled={!allRequirementsMet} onClick={handleCompleteSection}>
+              {allRequirementsMet ? "Complete Section & Unlock Next" : "Complete All Requirements First"}
+            </Button>
+          )}
         </div>
       </div>
     </div>

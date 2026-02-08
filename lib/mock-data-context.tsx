@@ -33,6 +33,7 @@ export interface Section {
   unitId: string
   isUnlocked: boolean
   isCompleted: boolean
+  completedDate: string | null
   topics: Topic[]
   resources: Resource[]
   progressionRequirements: ProgressionRequirement[]
@@ -57,6 +58,7 @@ interface LearningDataContextType {
   updateSectionDeadline: (pathId: string, sectionId: string, deadline: string | null) => void
   toggleTopic: (pathId: string, sectionId: string, topicId: string) => void
   toggleRequirement: (pathId: string, sectionId: string, reqId: string, childId?: string) => void
+  completeSection: (pathId: string, sectionId: string) => void
   getSectionById: (pathId: string, sectionId: string) => Section | undefined
   getWeeklyItems: () => Array<{ section: Section; daysUntil: number }>
   getAllItemsWithDeadlines: () => Array<{ section: Section; daysUntil: number; isNext: boolean }>
@@ -173,6 +175,37 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
     )
   }
 
+  const completeSection = (pathId: string, sectionId: string) => {
+    setPaths((prev) =>
+      prev.map((path) => {
+        if (path.id !== pathId) return path
+
+        return {
+          ...path,
+          units: path.units.map((unit) => ({
+            ...unit,
+            sections: unit.sections.map((section, index) => {
+              if (section.id === sectionId) {
+                // Mark this section complete
+                return {
+                  ...section,
+                  isCompleted: true,
+                  completedDate: new Date().toISOString(),
+                }
+              }
+              // Unlock next section if this is the previous one
+              const prevSection = unit.sections[index - 1]
+              if (prevSection?.id === sectionId && !section.isUnlocked) {
+                return { ...section, isUnlocked: true }
+              }
+              return section
+            }),
+          })),
+        }
+      })
+    )
+  }
+
   const getSectionById = (pathId: string, sectionId: string): Section | undefined => {
     const path = paths.find((p) => p.id === pathId)
     if (!path) return undefined
@@ -263,6 +296,7 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
         updateSectionDeadline,
         toggleTopic,
         toggleRequirement,
+        completeSection,
         getSectionById,
         getWeeklyItems,
         getAllItemsWithDeadlines,
