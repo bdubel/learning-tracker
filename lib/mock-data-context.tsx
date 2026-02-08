@@ -59,6 +59,7 @@ interface LearningDataContextType {
   toggleRequirement: (pathId: string, sectionId: string, reqId: string, childId?: string) => void
   getSectionById: (pathId: string, sectionId: string) => Section | undefined
   getWeeklyItems: () => Array<{ section: Section; daysUntil: number }>
+  getAllItemsWithDeadlines: () => Array<{ section: Section; daysUntil: number; isNext: boolean }>
 }
 
 const LearningDataContext = createContext<LearningDataContextType | undefined>(undefined)
@@ -181,6 +182,54 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
     return items.sort((a, b) => a.daysUntil - b.daysUntil)
   }
 
+  const getAllItemsWithDeadlines = () => {
+    const today = new Date()
+    const allItems: Array<{ section: Section; daysUntil: number; isNext: boolean }> = []
+
+    // Get next item for each path
+    const nextItemPerPath = new Map<string, string>()
+
+    paths.forEach((path) => {
+      let nextSection: Section | null = null
+      let minDaysUntil = Infinity
+
+      path.units.forEach((unit) => {
+        unit.sections.forEach((section) => {
+          if (section.deadline && !section.isCompleted) {
+            const deadline = new Date(section.deadline)
+            const daysUntil = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+
+            if (daysUntil < minDaysUntil) {
+              minDaysUntil = daysUntil
+              nextSection = section
+            }
+          }
+        })
+      })
+
+      if (nextSection) {
+        nextItemPerPath.set(path.id, nextSection.id)
+      }
+    })
+
+    // Collect all items with deadlines
+    paths.forEach((path) => {
+      path.units.forEach((unit) => {
+        unit.sections.forEach((section) => {
+          if (section.deadline && !section.isCompleted) {
+            const deadline = new Date(section.deadline)
+            const daysUntil = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+            const isNext = nextItemPerPath.get(path.id) === section.id
+
+            allItems.push({ section, daysUntil, isNext })
+          }
+        })
+      })
+    })
+
+    return allItems.sort((a, b) => a.daysUntil - b.daysUntil)
+  }
+
   return (
     <LearningDataContext.Provider
       value={{
@@ -190,6 +239,7 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
         toggleRequirement,
         getSectionById,
         getWeeklyItems,
+        getAllItemsWithDeadlines,
       }}
     >
       {children}
