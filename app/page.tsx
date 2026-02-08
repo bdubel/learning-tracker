@@ -1,65 +1,137 @@
-import Image from "next/image";
+import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+
+// Mock data for now - will replace with Supabase queries
+const mockData = {
+  weeklyAgenda: [
+    {
+      id: "1",
+      name: "1A: US Geography",
+      code: "1A",
+      deadline: "2026-02-16",
+      pathName: "Applied Geography",
+      daysUntil: 9,
+      completed: false,
+    },
+  ],
+  learningPaths: [
+    {
+      id: "1",
+      name: "Applied Geography",
+      description: "A practical curriculum for building geographic literacy",
+      totalSections: 14,
+      completedSections: 0,
+      currentSection: "1A: US Geography",
+      progress: 0,
+    },
+  ],
+}
+
+function getDaysUntilText(days: number) {
+  if (days < 0) return "Overdue"
+  if (days === 0) return "Due today"
+  if (days === 1) return "Due tomorrow"
+  return `Due in ${days} days`
+}
 
 export default function Home() {
+  const { weeklyAgenda, learningPaths } = mockData
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-8 px-4 max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold tracking-tight">Learning Tracker</h1>
+          <p className="text-muted-foreground mt-2">
+            Track your mastery-based learning paths
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* Weekly Agenda */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">This Week</h2>
+          {weeklyAgenda.length > 0 ? (
+            <div className="grid gap-4">
+              {weeklyAgenda.map((item) => (
+                <Card key={item.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{item.name}</CardTitle>
+                        <CardDescription>{item.pathName}</CardDescription>
+                      </div>
+                      <Badge variant={item.daysUntil < 3 ? "destructive" : "secondary"}>
+                        {getDaysUntilText(item.daysUntil)}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex gap-2">
+                      <Button asChild variant="default" size="sm">
+                        <Link href={`/section/${item.id}`}>Continue</Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/path/${item.pathName.toLowerCase().replace(/\s+/g, "-")}`}>
+                          View Path
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                No upcoming deadlines this week. You're all caught up!
+              </CardContent>
+            </Card>
+          )}
+        </section>
+
+        {/* Learning Paths Overview */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-semibold">Learning Paths</h2>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/paths/new">Add Path</Link>
+            </Button>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {learningPaths.map((path) => (
+              <Card key={path.id} className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle>{path.name}</CardTitle>
+                  <CardDescription>{path.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="font-medium">
+                        {path.completedSections} / {path.totalSections} sections
+                      </span>
+                    </div>
+                    <Progress value={path.progress} />
+                  </div>
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Current: </span>
+                      <span className="font-medium">{path.currentSection}</span>
+                    </div>
+                    <Button asChild size="sm">
+                      <Link href={`/path/${path.id}`}>View</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
-  );
+  )
 }
