@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, use } from "react"
+import { use } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,60 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CheckCircle2, AlertCircle, ExternalLink } from "lucide-react"
+import { useLearningData } from "@/lib/mock-data-context"
+import { DeadlinePicker } from "@/components/deadline-picker"
 
-// Mock data - will replace with Supabase queries
-const mockSection = {
-  id: "section-1a",
-  name: "1A: US Geography",
-  code: "1A",
-  deadline: "2026-02-16",
-  pathName: "Applied Geography",
-  pathId: "applied-geography",
-  topics: [
-    { id: "1", content: "50 states spatially (use Seterra until you can do it without hints)", completed: false },
-    { id: "2", content: "Major mountain ranges: Rockies, Appalachians, Sierra Nevada, Cascades, Great Plains", completed: false },
-    { id: "3", content: "Major rivers: Mississippi system (including Missouri and Ohio tributaries), Colorado, Columbia, Rio Grande", completed: false },
-    { id: "4", content: "Why major cities are where they are (ports, rivers, passes, resources)", completed: false },
-    { id: "5", content: "Major military installations and their geographic logic", completed: false },
-    { id: "6", content: "Basic terrain of each US region: Northeast, Southeast, Midwest, Great Plains, Southwest, Pacific Northwest, Alaska, Hawaii", completed: false },
-  ],
-  resources: [
-    { id: "1", name: "Seterra", url: "https://seterra.com", description: "Free browser-based map quizzes" },
-    { id: "2", name: "Blank US maps", url: null, description: "To sketch on" },
-  ],
-  progressionRequirements: [
-    { id: "1", content: "Complete a blank US map quiz (all 50 states) in under 3 minutes with 100% accuracy", completed: false },
-    {
-      id: "2",
-      content: "Sketch from memory the rough shapes and locations of: Rockies, Appalachians, Sierra Nevada, Cascades, Great Plains",
-      completed: false
-    },
-    {
-      id: "3",
-      content: "Trace the Mississippi River system, the Colorado, the Columbia, and the Rio Grande on a blank map",
-      completed: false
-    },
-    {
-      id: "4",
-      content: "Explain why these cities are where they are:",
-      completed: false,
-      children: [
-        { id: "4a", content: "New York (harbor + Hudson River access to interior)", completed: false },
-        { id: "4b", content: "Chicago (Great Lakes + rail hub + portage point)", completed: false },
-        { id: "4c", content: "New Orleans (Mississippi mouth, Gulf access)", completed: false },
-        { id: "4d", content: "Los Angeles (port, later water imported)", completed: false },
-        { id: "4e", content: "Denver (gateway to Rockies, mining supply point)", completed: false },
-        { id: "4f", content: "St. Louis (confluence of Mississippi and Missouri)", completed: false },
-      ],
-    },
-    {
-      id: "5",
-      content: "Name and roughly locate at least 10 major US military installations and explain the geographic logic of 5 of them",
-      completed: false
-    },
-    { id: "6", content: "Describe the basic terrain of each US region", completed: false },
-  ],
-}
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
@@ -77,34 +26,24 @@ function getDaysUntil(dateString: string) {
 
 export default function SectionPage({ params }: { params: Promise<{ id: string; sectionId: string }> }) {
   const { id, sectionId } = use(params)
-  const [section, setSection] = useState(mockSection)
+  const { getSectionById, toggleTopic, toggleRequirement, updateSectionDeadline } = useLearningData()
+
+  const section = getSectionById(id, sectionId)
+
+  if (!section) {
+    return <div className="flex-1 flex items-center justify-center">Section not found</div>
+  }
 
   const handleTopicToggle = (topicId: string) => {
-    setSection(prev => ({
-      ...prev,
-      topics: prev.topics.map(t =>
-        t.id === topicId ? { ...t, completed: !t.completed } : t
-      ),
-    }))
+    toggleTopic(id, sectionId, topicId)
   }
 
   const handleRequirementToggle = (reqId: string, childId?: string) => {
-    setSection(prev => ({
-      ...prev,
-      progressionRequirements: prev.progressionRequirements.map(req => {
-        if (req.id === reqId) {
-          if (childId && req.children) {
-            const updatedChildren = req.children.map(child =>
-              child.id === childId ? { ...child, completed: !child.completed } : child
-            )
-            const allChildrenComplete = updatedChildren.every(c => c.completed)
-            return { ...req, children: updatedChildren, completed: allChildrenComplete }
-          }
-          return { ...req, completed: !req.completed }
-        }
-        return req
-      }),
-    }))
+    toggleRequirement(id, sectionId, reqId, childId)
+  }
+
+  const handleDeadlineChange = (deadline: string | null) => {
+    updateSectionDeadline(id, sectionId, deadline)
   }
 
   const topicsCompleted = section.topics.filter(t => t.completed).length
@@ -126,18 +65,30 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
       <div className="container mx-auto py-8 px-8 max-w-4xl">
         <div className="mb-6">
           <div className="flex items-start justify-between mb-4">
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="secondary">{section.code}</Badge>
                 {isOverdue && <Badge variant="destructive">Overdue</Badge>}
                 {isDueSoon && !isOverdue && <Badge variant="destructive">Due Soon</Badge>}
               </div>
               <h1 className="text-3xl font-bold tracking-tight">{section.name}</h1>
-              <p className="text-muted-foreground mt-2">
-                Deadline: {formatDate(section.deadline)}
-                {daysUntil >= 0 && ` (${daysUntil} days remaining)`}
-                {daysUntil < 0 && ` (${Math.abs(daysUntil)} days overdue)`}
-              </p>
+              <div className="flex items-center gap-3 mt-3">
+                <DeadlinePicker
+                  deadline={section.deadline}
+                  onDeadlineChange={handleDeadlineChange}
+                  placeholder="Set deadline"
+                />
+                {section.deadline && daysUntil >= 0 && (
+                  <span className="text-sm text-muted-foreground">
+                    ({daysUntil} days remaining)
+                  </span>
+                )}
+                {section.deadline && daysUntil < 0 && (
+                  <span className="text-sm text-destructive">
+                    ({Math.abs(daysUntil)} days overdue)
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>

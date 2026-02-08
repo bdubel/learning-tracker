@@ -6,82 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { CheckCircle2, Circle, Lock, ChevronRight } from "lucide-react"
-
-// Mock data - will replace with real data
-const mockPath = {
-  id: "applied-geography",
-  name: "Applied Geography",
-  units: [
-    {
-      id: "unit-1",
-      name: "Foundation",
-      sections: [
-        {
-          id: "section-1a",
-          name: "1A: US Geography",
-          code: "1A",
-          isUnlocked: true,
-          isCompleted: false,
-        },
-        {
-          id: "section-1b",
-          name: "1B: World Regions Mental Model",
-          code: "1B",
-          isUnlocked: false,
-          isCompleted: false,
-        },
-        {
-          id: "section-1c",
-          name: "1C: Core Countries—Europe & Americas",
-          code: "1C",
-          isUnlocked: false,
-          isCompleted: false,
-        },
-        {
-          id: "section-1d",
-          name: "1D: Core Countries—Middle East & Africa",
-          code: "1D",
-          isUnlocked: false,
-          isCompleted: false,
-        },
-      ],
-    },
-    {
-      id: "unit-2",
-      name: "Strategic Geography",
-      sections: [
-        {
-          id: "section-2a",
-          name: "2A: Chokepoints & Trade Routes",
-          code: "2A",
-          isUnlocked: false,
-          isCompleted: false,
-        },
-        {
-          id: "section-2b",
-          name: "2B: Asia-Pacific",
-          code: "2B",
-          isUnlocked: false,
-          isCompleted: false,
-        },
-        {
-          id: "section-2c",
-          name: "2C: Russia, Eastern Europe & Central Asia",
-          code: "2C",
-          isUnlocked: false,
-          isCompleted: false,
-        },
-        {
-          id: "section-2d",
-          name: "2D: Resources & Economic Geography",
-          code: "2D",
-          isUnlocked: false,
-          isCompleted: false,
-        },
-      ],
-    },
-  ],
-}
+import { useLearningData } from "@/lib/mock-data-context"
+import { format } from "date-fns"
 
 interface PathSidebarProps {
   pathId: string
@@ -89,7 +15,11 @@ interface PathSidebarProps {
 
 export function PathSidebar({ pathId }: PathSidebarProps) {
   const pathname = usePathname()
-  const path = mockPath // TODO: Fetch real data based on pathId
+  const { paths } = useLearningData()
+
+  const path = paths.find((p) => p.id === pathId)
+
+  if (!path) return null
 
   const totalSections = path.units.reduce((acc, unit) => acc + unit.sections.length, 0)
   const completedSections = path.units.reduce(
@@ -153,6 +83,11 @@ export function PathSidebar({ pathId }: PathSidebarProps) {
                         </div>
                         <div className="flex-1 text-left min-w-0">
                           <div className="text-sm truncate">{section.name}</div>
+                          {section.deadline && (
+                            <div className="text-xs text-muted-foreground">
+                              {format(new Date(section.deadline), "MMM d")}
+                            </div>
+                          )}
                         </div>
                         {isActive && (
                           <ChevronRight className="h-4 w-4 shrink-0" />

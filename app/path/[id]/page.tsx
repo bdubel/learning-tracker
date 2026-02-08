@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,142 +13,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { CheckCircle2, Circle, Lock } from "lucide-react"
-
-// Mock data - will replace with Supabase queries
-const mockPath = {
-  id: "1",
-  name: "Applied Geography",
-  description: "A practical curriculum for building geographic literacy. Focus on mastery—don't move to the next section until you meet the progression requirements.",
-  duration: "~7 months",
-  effort: "~1.5 hours/week",
-  totalSections: 14,
-  completedSections: 0,
-  units: [
-    {
-      id: "unit-1",
-      name: "Foundation",
-      completeBy: "2026-04-02",
-      sections: [
-        {
-          id: "section-1a",
-          name: "1A: US Geography",
-          code: "1A",
-          deadline: "2026-02-16",
-          isUnlocked: true,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 6,
-          requirementsMet: 0,
-          requirementsTotal: 7,
-        },
-        {
-          id: "section-1b",
-          name: "1B: World Regions Mental Model",
-          code: "1B",
-          deadline: "2026-02-28",
-          isUnlocked: false,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 5,
-          requirementsMet: 0,
-          requirementsTotal: 4,
-        },
-        {
-          id: "section-1c",
-          name: "1C: Core Countries—Europe & Americas",
-          code: "1C",
-          deadline: "2026-03-16",
-          isUnlocked: false,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 4,
-          requirementsMet: 0,
-          requirementsTotal: 5,
-        },
-        {
-          id: "section-1d",
-          name: "1D: Core Countries—Middle East & Africa",
-          code: "1D",
-          deadline: "2026-04-02",
-          isUnlocked: false,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 4,
-          requirementsMet: 0,
-          requirementsTotal: 5,
-        },
-      ],
-    },
-    {
-      id: "unit-2",
-      name: "Strategic Geography",
-      completeBy: "2026-06-08",
-      sections: [
-        {
-          id: "section-2a",
-          name: "2A: Chokepoints & Trade Routes",
-          code: "2A",
-          deadline: "2026-04-16",
-          isUnlocked: false,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 5,
-          requirementsMet: 0,
-          requirementsTotal: 4,
-        },
-        {
-          id: "section-2b",
-          name: "2B: Asia-Pacific",
-          code: "2B",
-          deadline: "2026-05-04",
-          isUnlocked: false,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 5,
-          requirementsMet: 0,
-          requirementsTotal: 4,
-        },
-        {
-          id: "section-2c",
-          name: "2C: Russia, Eastern Europe & Central Asia",
-          code: "2C",
-          deadline: "2026-05-20",
-          isUnlocked: false,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 5,
-          requirementsMet: 0,
-          requirementsTotal: 4,
-        },
-        {
-          id: "section-2d",
-          name: "2D: Resources & Economic Geography",
-          code: "2D",
-          deadline: "2026-06-08",
-          isUnlocked: false,
-          isCompleted: false,
-          progressionMet: false,
-          topicsCompleted: 0,
-          topicsTotal: 5,
-          requirementsMet: 0,
-          requirementsTotal: 4,
-        },
-      ],
-    },
-  ],
-  weeklyRhythm: [
-    { day: "Sunday", activity: "New topic reading/videos", time: "45 min" },
-    { day: "Wednesday", activity: "Seterra or map practice", time: "20 min" },
-    { day: "Friday", activity: "Review + news connection", time: "25 min" },
-  ],
-}
+import { useLearningData } from "@/lib/mock-data-context"
+import { use } from "react"
+import { format } from "date-fns"
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
@@ -160,35 +29,32 @@ function getDaysUntil(dateString: string) {
   return diff
 }
 
-export default async function LearningPathPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const path = mockPath
+export default function LearningPathPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const { paths } = useLearningData()
+
+  const path = paths.find((p) => p.id === id)
 
   if (!path) {
     notFound()
   }
 
-  const progressPercentage = (path.completedSections / path.totalSections) * 100
+  const totalSections = path.units.reduce((acc, unit) => acc + unit.sections.length, 0)
+  const completedSections = path.units.reduce(
+    (acc, unit) => acc + unit.sections.filter((s) => s.isCompleted).length,
+    0
+  )
+  const progressPercentage = (completedSections / totalSections) * 100
 
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="container mx-auto py-8 px-8 max-w-5xl">
         <div className="mb-6">
-          <Button asChild variant="ghost" size="sm" className="mb-4">
-            <Link href="/">← Back to Dashboard</Link>
-          </Button>
-
           <div className="flex items-start justify-between mb-4">
             <div>
               <h1 className="text-4xl font-bold tracking-tight">{path.name}</h1>
               <p className="text-muted-foreground mt-2 max-w-3xl">{path.description}</p>
             </div>
-          </div>
-
-          <div className="flex gap-4 text-sm text-muted-foreground">
-            <span>Duration: {path.duration}</span>
-            <span>•</span>
-            <span>Effort: {path.effort}</span>
           </div>
         </div>
 
@@ -202,31 +68,10 @@ export default async function LearningPathPage({ params }: { params: Promise<{ i
               <div className="flex justify-between text-sm">
                 <span>Sections Completed</span>
                 <span className="font-medium">
-                  {path.completedSections} / {path.totalSections}
+                  {completedSections} / {totalSections}
                 </span>
               </div>
               <Progress value={progressPercentage} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Weekly Rhythm */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Weekly Rhythm</CardTitle>
-            <CardDescription>Recommended practice schedule</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-3">
-              {path.weeklyRhythm.map((item, index) => (
-                <div key={index} className="flex items-center justify-between py-2 border-b last:border-0">
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium min-w-24">{item.day}</span>
-                    <span className="text-muted-foreground">{item.activity}</span>
-                  </div>
-                  <Badge variant="secondary">{item.time}</Badge>
-                </div>
-              ))}
             </div>
           </CardContent>
         </Card>
@@ -241,19 +86,26 @@ export default async function LearningPathPage({ params }: { params: Promise<{ i
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle>{unit.name}</CardTitle>
-                    <CardDescription>Complete by {formatDate(unit.completeBy)}</CardDescription>
+                    {unit.completeBy && (
+                      <CardDescription>Complete by {formatDate(unit.completeBy)}</CardDescription>
+                    )}
                   </div>
                   <Badge variant="outline">
-                    {unit.sections.filter(s => s.isCompleted).length} / {unit.sections.length}
+                    {unit.sections.filter((s) => s.isCompleted).length} / {unit.sections.length}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
                   {unit.sections.map((section) => {
-                    const daysUntil = getDaysUntil(section.deadline)
-                    const isOverdue = daysUntil < 0
-                    const isDueSoon = daysUntil >= 0 && daysUntil <= 7
+                    const daysUntil = section.deadline ? getDaysUntil(section.deadline) : null
+                    const isOverdue = daysUntil !== null && daysUntil < 0
+                    const isDueSoon = daysUntil !== null && daysUntil >= 0 && daysUntil <= 7
+
+                    const topicsCompleted = section.topics.filter((t) => t.completed).length
+                    const topicsTotal = section.topics.length
+                    const requirementsMet = section.progressionRequirements.filter((r) => r.completed).length
+                    const requirementsTotal = section.progressionRequirements.length
 
                     return (
                       <AccordionItem key={section.id} value={section.id}>
@@ -269,15 +121,15 @@ export default async function LearningPathPage({ params }: { params: Promise<{ i
                               )}
                               <div className="text-left">
                                 <div className="font-medium">{section.name}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  Due {formatDate(section.deadline)}
-                                </div>
+                                {section.deadline && (
+                                  <div className="text-sm text-muted-foreground">
+                                    Due {formatDate(section.deadline)}
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              {!section.isUnlocked && (
-                                <Badge variant="secondary">Locked</Badge>
-                              )}
+                              {!section.isUnlocked && <Badge variant="secondary">Locked</Badge>}
                               {section.isUnlocked && !section.isCompleted && isOverdue && (
                                 <Badge variant="destructive">Overdue</Badge>
                               )}
@@ -302,24 +154,20 @@ export default async function LearningPathPage({ params }: { params: Promise<{ i
                               <div>
                                 <span className="text-muted-foreground">Topics: </span>
                                 <span className="font-medium">
-                                  {section.topicsCompleted} / {section.topicsTotal}
+                                  {topicsCompleted} / {topicsTotal}
                                 </span>
                               </div>
                               <div>
                                 <span className="text-muted-foreground">Requirements: </span>
                                 <span className="font-medium">
-                                  {section.requirementsMet} / {section.requirementsTotal}
+                                  {requirementsMet} / {requirementsTotal}
                                 </span>
                               </div>
                             </div>
 
                             <div className="flex gap-2">
-                              <Button
-                                asChild
-                                size="sm"
-                                disabled={!section.isUnlocked}
-                              >
-                                <Link href={`/section/${section.id}`}>
+                              <Button asChild size="sm" disabled={!section.isUnlocked}>
+                                <Link href={`/path/${id}/section/${section.id}`}>
                                   {section.isCompleted ? "Review" : "Start Section"}
                                 </Link>
                               </Button>

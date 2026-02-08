@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { MainSidebar } from "@/components/main-sidebar";
+import { LearningDataProvider } from "@/lib/mock-data-context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,10 +29,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex h-screen overflow-hidden">
-          <MainSidebar />
-          {children}
-        </div>
+        <LearningDataProvider>
+          <div className="flex h-screen overflow-hidden">
+            <MainSidebar />
+            {children}
+          </div>
+        </LearningDataProvider>
       </body>
     </html>
   );
