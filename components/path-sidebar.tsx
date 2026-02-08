@@ -22,11 +22,11 @@ export function PathSidebar({ pathId }: PathSidebarProps) {
   return (
     <div className="w-72 border-r bg-muted/20 h-screen flex flex-col">
       <div className="flex-1 overflow-y-auto py-2">
-        {path.units.map((unit) => (
-          <div key={unit.id} className="mb-4">
-            <div className="px-4 py-2">
+        {path.units.map((unit, unitIndex) => (
+          <div key={unit.id} className="mb-6">
+            <div className="px-4 py-2 mb-1">
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {unit.name}
+                Unit {unitIndex + 1}: {unit.name}
               </h3>
             </div>
             <div className="space-y-0.5 px-2">
@@ -60,10 +60,11 @@ export function PathSidebar({ pathId }: PathSidebarProps) {
                           )}
                         </div>
                         <div className="flex-1 text-left min-w-0">
-                          <div className="text-sm truncate">{section.name}</div>
+                          <div className="text-sm font-medium">{section.code}</div>
+                          <div className="text-xs text-muted-foreground truncate">{section.name}</div>
                           {section.deadline && (
                             <div className="text-xs text-muted-foreground">
-                              {format(new Date(section.deadline), "MMM d")}
+                              Due {format(new Date(section.deadline), "MMM d")}
                             </div>
                           )}
                         </div>
