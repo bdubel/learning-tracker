@@ -75,7 +75,7 @@ const initialData: LearningPath[] = [
         sections: [
           {
             id: "section-1a",
-            name: "1A: US Geography",
+            name: "US Geography",
             code: "1A",
             deadline: "2026-02-16",
             pathId: "applied-geography",
@@ -116,7 +116,7 @@ const initialData: LearningPath[] = [
           },
           {
             id: "section-1b",
-            name: "1B: World Regions Mental Model",
+            name: "World Regions Mental Model",
             code: "1B",
             deadline: "2026-02-28",
             pathId: "applied-geography",
@@ -135,7 +135,7 @@ const initialData: LearningPath[] = [
           },
           {
             id: "section-1c",
-            name: "1C: Core Countries—Europe & Americas",
+            name: "Core Countries—Europe & Americas",
             code: "1C",
             deadline: "2026-03-16",
             pathId: "applied-geography",
@@ -161,7 +161,7 @@ const initialData: LearningPath[] = [
         sections: [
           {
             id: "section-2a",
-            name: "2A: Chokepoints & Trade Routes",
+            name: "Chokepoints & Trade Routes",
             code: "2A",
             deadline: null,
             pathId: "applied-geography",
