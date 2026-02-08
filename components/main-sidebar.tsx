@@ -17,7 +17,7 @@ export function MainSidebar() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {/* Home / Weekly Overview */}
+        {/* Home / Biweekly Overview */}
         <div className="p-3">
           <Link href="/">
             <Button
@@ -26,7 +26,7 @@ export function MainSidebar() {
               size="sm"
             >
               <Home className="h-4 w-4 mr-2" />
-              Weekly Overview
+              Biweekly Overview
             </Button>
           </Link>
         </div>

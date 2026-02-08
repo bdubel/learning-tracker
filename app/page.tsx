@@ -11,9 +11,9 @@ export default function Home() {
     <div className="flex-1 overflow-y-auto">
       <div className="container mx-auto py-8 px-8 max-w-5xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Weekly Overview</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Biweekly Overview</h1>
           <p className="text-muted-foreground mt-2">
-            Your upcoming deadlines and learning progress
+            Your upcoming deadlines for the next two weeks
           </p>
         </div>
 

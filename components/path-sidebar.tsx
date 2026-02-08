@@ -2,9 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { CheckCircle2, Circle, Lock, ChevronRight } from "lucide-react"
 import { useLearningData } from "@/lib/mock-data-context"
 import { format } from "date-fns"
@@ -21,28 +19,8 @@ export function PathSidebar({ pathId }: PathSidebarProps) {
 
   if (!path) return null
 
-  const totalSections = path.units.reduce((acc, unit) => acc + unit.sections.length, 0)
-  const completedSections = path.units.reduce(
-    (acc, unit) => acc + unit.sections.filter((s) => s.isCompleted).length,
-    0
-  )
-  const progress = (completedSections / totalSections) * 100
-
   return (
     <div className="w-72 border-r bg-muted/20 h-screen flex flex-col">
-      <div className="p-4 border-b bg-background">
-        <h2 className="font-semibold text-sm mb-3">{path.name}</h2>
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="font-medium">
-              {completedSections} / {totalSections}
-            </span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-      </div>
-
       <div className="flex-1 overflow-y-auto py-2">
         {path.units.map((unit) => (
           <div key={unit.id} className="mb-4">
