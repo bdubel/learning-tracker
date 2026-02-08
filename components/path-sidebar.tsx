@@ -20,7 +20,7 @@ export function PathSidebar({ pathId }: PathSidebarProps) {
   if (!path) return null
 
   return (
-    <div className="w-72 border-r bg-muted/20 h-screen flex flex-col">
+    <div className="w-72 border-l bg-muted/20 h-screen flex flex-col">
       <div className="flex-1 overflow-y-auto py-2">
         {path.units.map((unit, unitIndex) => (
           <div key={unit.id} className="mb-6">

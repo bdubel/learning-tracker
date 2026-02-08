@@ -11,8 +11,8 @@ export default async function PathLayout({
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      <PathSidebar pathId={id} />
       {children}
+      <PathSidebar pathId={id} />
     </div>
   )
 }

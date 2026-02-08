@@ -53,8 +53,19 @@ export interface LearningPath {
   units: Unit[]
 }
 
+export interface LogEntry {
+  id: string
+  pathId: string
+  pathName: string
+  date: string
+  content: string
+  createdAt: string
+  updatedAt: string
+}
+
 interface LearningDataContextType {
   paths: LearningPath[]
+  logEntries: LogEntry[]
   updateSectionDeadline: (pathId: string, sectionId: string, deadline: string | null) => void
   toggleTopic: (pathId: string, sectionId: string, topicId: string) => void
   toggleRequirement: (pathId: string, sectionId: string, reqId: string, childId?: string) => void
@@ -62,6 +73,10 @@ interface LearningDataContextType {
   getSectionById: (pathId: string, sectionId: string) => Section | undefined
   getWeeklyItems: () => Array<{ section: Section; daysUntil: number }>
   getAllItemsWithDeadlines: () => Array<{ section: Section; daysUntil: number; isNext: boolean }>
+  addLogEntry: (entry: Omit<LogEntry, 'id' | 'createdAt' | 'updatedAt'>) => void
+  updateLogEntry: (id: string, content: string) => void
+  deleteLogEntry: (id: string) => void
+  getLogEntriesForDate: (date: string) => LogEntry[]
 }
 
 const LearningDataContext = createContext<LearningDataContextType | undefined>(undefined)
@@ -71,6 +86,7 @@ const initialData: LearningPath[] = [appliedGeographyData]
 
 export function LearningDataProvider({ children }: { children: ReactNode }) {
   const [paths, setPaths] = useState<LearningPath[]>(initialData)
+  const [logEntries, setLogEntries] = useState<LogEntry[]>([])
   const [isHydrated, setIsHydrated] = useState(false)
 
   // Load from localStorage after initial mount to avoid hydration mismatch
@@ -78,7 +94,9 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        setPaths(JSON.parse(stored))
+        const data = JSON.parse(stored)
+        setPaths(data.paths || data) // Backward compatible
+        setLogEntries(data.logEntries || [])
       }
     } catch (error) {
       console.error('Failed to load from localStorage:', error)
@@ -86,16 +104,16 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
     setIsHydrated(true)
   }, [])
 
-  // Persist to localStorage whenever paths change (but skip initial hydration)
+  // Persist to localStorage whenever paths or logEntries change (but skip initial hydration)
   useEffect(() => {
     if (!isHydrated) return
 
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(paths))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ paths, logEntries }))
     } catch (error) {
       console.error('Failed to save to localStorage:', error)
     }
-  }, [paths, isHydrated])
+  }, [paths, logEntries, isHydrated])
 
   const updateSectionDeadline = (pathId: string, sectionId: string, deadline: string | null) => {
     setPaths((prev) =>
@@ -289,10 +307,40 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
     return allItems.sort((a, b) => a.daysUntil - b.daysUntil)
   }
 
+  const addLogEntry = (entry: Omit<LogEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString()
+    const newEntry: LogEntry = {
+      ...entry,
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    }
+    setLogEntries((prev) => [...prev, newEntry])
+  }
+
+  const updateLogEntry = (id: string, content: string) => {
+    setLogEntries((prev) =>
+      prev.map((entry) =>
+        entry.id === id
+          ? { ...entry, content, updatedAt: new Date().toISOString() }
+          : entry
+      )
+    )
+  }
+
+  const deleteLogEntry = (id: string) => {
+    setLogEntries((prev) => prev.filter((entry) => entry.id !== id))
+  }
+
+  const getLogEntriesForDate = (date: string) => {
+    return logEntries.filter((entry) => entry.date === date)
+  }
+
   return (
     <LearningDataContext.Provider
       value={{
         paths,
+        logEntries,
         updateSectionDeadline,
         toggleTopic,
         toggleRequirement,
@@ -300,6 +348,10 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
         getSectionById,
         getWeeklyItems,
         getAllItemsWithDeadlines,
+        addLogEntry,
+        updateLogEntry,
+        deleteLogEntry,
+        getLogEntriesForDate,
       }}
     >
       {children}

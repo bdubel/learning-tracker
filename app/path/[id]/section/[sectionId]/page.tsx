@@ -1,12 +1,10 @@
 "use client"
 
 import { use } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CheckCircle2, AlertCircle, ExternalLink } from "lucide-react"
 import { useLearningData } from "@/lib/mock-data-context"
 import { DeadlinePicker } from "@/components/deadline-picker"
@@ -98,33 +96,33 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
 
         {/* Progress Alert */}
         {allRequirementsMet && (
-          <Alert className="mb-6 border-green-600 bg-green-50">
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-            <AlertTitle className="text-green-900">Ready to Progress!</AlertTitle>
-            <AlertDescription className="text-green-800">
-              You've completed all progression requirements. You can now move to the next section.
-            </AlertDescription>
-          </Alert>
+          <div className="mb-6 border border-green-600 bg-green-50 rounded-md p-4 flex items-start gap-3">
+            <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
+            <div>
+              <div className="font-semibold text-green-900 text-sm">Ready to Progress!</div>
+              <div className="text-green-800 text-sm mt-1">
+                You've completed all progression requirements. You can now move to the next section.
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Topics */}
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Topics to Learn</CardTitle>
-                <CardDescription>Track your learning progress</CardDescription>
-              </div>
-              <span className="text-sm font-medium">
-                {topicsCompleted} / {topicsTotal}
-              </span>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-semibold">Topics to Learn</h2>
+              <p className="text-sm text-muted-foreground">Track your learning progress</p>
             </div>
-            <Progress value={topicsProgress} className="mt-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+            <span className="text-sm font-medium">
+              {topicsCompleted} / {topicsTotal}
+            </span>
+          </div>
+          <Progress value={topicsProgress} className="mb-4" />
+          <div className="border rounded-md p-4">
+            <div className="space-y-1">
               {section.topics.map((topic) => (
-                <div key={topic.id} className="flex items-start gap-3 py-2">
+                <div key={topic.id} className="flex items-start gap-3 py-1">
                   <Checkbox
                     id={topic.id}
                     checked={topic.completed}
@@ -142,16 +140,16 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Resources */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Resources</CardTitle>
-            <CardDescription>Helpful materials for this section</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="mb-6">
+          <div className="mb-3">
+            <h2 className="text-lg font-semibold">Resources</h2>
+            <p className="text-sm text-muted-foreground">Helpful materials for this section</p>
+          </div>
+          <div className="border rounded-md p-4">
             <div className="space-y-3">
               {section.resources.map((resource) => (
                 <div key={resource.id} className="flex items-start justify-between py-2 border-b last:border-0">
@@ -171,34 +169,32 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Progression Requirements */}
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  Progression Requirements
-                  {!allRequirementsMet && <AlertCircle className="h-5 w-5 text-yellow-600" />}
-                  {allRequirementsMet && <CheckCircle2 className="h-5 w-5 text-green-600" />}
-                </CardTitle>
-                <CardDescription>
-                  Complete all requirements to unlock the next section
-                </CardDescription>
-              </div>
-              <span className="text-sm font-medium">
-                {requirementsCompleted} / {requirementsTotal}
-              </span>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                Progression Requirements
+                {!allRequirementsMet && <AlertCircle className="h-5 w-5 text-yellow-600" />}
+                {allRequirementsMet && <CheckCircle2 className="h-5 w-5 text-green-600" />}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Complete all requirements to unlock the next section
+              </p>
             </div>
-            <Progress value={requirementsProgress} className="mt-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+            <span className="text-sm font-medium">
+              {requirementsCompleted} / {requirementsTotal}
+            </span>
+          </div>
+          <Progress value={requirementsProgress} className="mb-4" />
+          <div className="border rounded-md p-4">
+            <div className="space-y-2">
               {section.progressionRequirements.map((req) => (
-                <div key={req.id} className="space-y-2">
-                  <div className="flex items-start gap-3 py-2">
+                <div key={req.id} className="space-y-1">
+                  <div className="flex items-start gap-3 py-1">
                     <Checkbox
                       id={req.id}
                       checked={req.completed}
@@ -215,7 +211,7 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
                     </label>
                   </div>
                   {req.children && (
-                    <div className="ml-8 space-y-2">
+                    <div className="ml-8 space-y-1">
                       {req.children.map((child) => (
                         <div key={child.id} className="flex items-start gap-3 py-1">
                           <Checkbox
@@ -239,8 +235,8 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Actions */}
         <div className="flex justify-end gap-4 pb-8">

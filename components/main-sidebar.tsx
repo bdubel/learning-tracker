@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Home, BookOpen, Plus } from "lucide-react"
+import { Home, BookOpen, Plus, BookText } from "lucide-react"
 import { useLearningData } from "@/lib/mock-data-context"
 
 export function MainSidebar() {
@@ -27,6 +27,20 @@ export function MainSidebar() {
             >
               <Home className="h-4 w-4 mr-2" />
               Home
+            </Button>
+          </Link>
+        </div>
+
+        {/* Learning Log */}
+        <div className="px-3 pb-3">
+          <Link href="/log">
+            <Button
+              variant={pathname === "/log" ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              size="sm"
+            >
+              <BookText className="h-4 w-4 mr-2" />
+              Learning Log
             </Button>
           </Link>
         </div>
