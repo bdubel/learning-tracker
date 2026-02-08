@@ -67,31 +67,33 @@ const LearningDataContext = createContext<LearningDataContextType | undefined>(u
 const STORAGE_KEY = 'learning-tracker-data'
 const initialData: LearningPath[] = [appliedGeographyData]
 
-function loadFromStorage(): LearningPath[] {
-  if (typeof window === 'undefined') return initialData
-
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      return JSON.parse(stored)
-    }
-  } catch (error) {
-    console.error('Failed to load from localStorage:', error)
-  }
-  return initialData
-}
-
 export function LearningDataProvider({ children }: { children: ReactNode }) {
-  const [paths, setPaths] = useState<LearningPath[]>(loadFromStorage)
+  const [paths, setPaths] = useState<LearningPath[]>(initialData)
+  const [isHydrated, setIsHydrated] = useState(false)
 
-  // Persist to localStorage whenever paths change
+  // Load from localStorage after initial mount to avoid hydration mismatch
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        setPaths(JSON.parse(stored))
+      }
+    } catch (error) {
+      console.error('Failed to load from localStorage:', error)
+    }
+    setIsHydrated(true)
+  }, [])
+
+  // Persist to localStorage whenever paths change (but skip initial hydration)
+  useEffect(() => {
+    if (!isHydrated) return
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(paths))
     } catch (error) {
       console.error('Failed to save to localStorage:', error)
     }
-  }, [paths])
+  }, [paths, isHydrated])
 
   const updateSectionDeadline = (pathId: string, sectionId: string, deadline: string | null) => {
     setPaths((prev) =>
