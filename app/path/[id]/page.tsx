@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import {
@@ -120,12 +119,7 @@ export default function LearningPathPage({ params }: { params: Promise<{ id: str
                                 <Lock className="h-5 w-5 text-muted-foreground" />
                               )}
                               <div className="text-left">
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary" className="text-xs">
-                                    {section.code}
-                                  </Badge>
-                                  <span className="font-medium">{section.name}</span>
-                                </div>
+                                <span className="font-medium">{section.name}</span>
                                 {section.deadline && (
                                   <div className="text-sm text-muted-foreground mt-1">
                                     Due {formatDate(section.deadline)}

@@ -2,9 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Circle, Lock, ChevronRight } from "lucide-react"
+import { CheckCircle2, Circle, Lock } from "lucide-react"
 import { useLearningData } from "@/lib/mock-data-context"
 import { format } from "date-fns"
 
@@ -61,21 +60,13 @@ export function PathSidebar({ pathId }: PathSidebarProps) {
                           )}
                         </div>
                         <div className="flex-1 text-left min-w-0">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="text-xs shrink-0">
-                              {section.code}
-                            </Badge>
-                            <span className="text-sm truncate">{section.name}</span>
-                          </div>
+                          <div className="text-sm truncate">{section.name}</div>
                           {section.deadline && (
                             <div className="text-xs text-muted-foreground mt-1">
                               Due {format(new Date(section.deadline), "MMM d")}
                             </div>
                           )}
                         </div>
-                        {isActive && (
-                          <ChevronRight className="h-4 w-4 shrink-0" />
-                        )}
                       </div>
                     </Button>
                   </Link>
