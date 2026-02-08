@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode } from "react"
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { appliedGeographyData } from "./applied-geography-data"
 
 export interface Topic {
@@ -64,10 +64,34 @@ interface LearningDataContextType {
 
 const LearningDataContext = createContext<LearningDataContextType | undefined>(undefined)
 
+const STORAGE_KEY = 'learning-tracker-data'
 const initialData: LearningPath[] = [appliedGeographyData]
 
+function loadFromStorage(): LearningPath[] {
+  if (typeof window === 'undefined') return initialData
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      return JSON.parse(stored)
+    }
+  } catch (error) {
+    console.error('Failed to load from localStorage:', error)
+  }
+  return initialData
+}
+
 export function LearningDataProvider({ children }: { children: ReactNode }) {
-  const [paths, setPaths] = useState<LearningPath[]>(initialData)
+  const [paths, setPaths] = useState<LearningPath[]>(loadFromStorage)
+
+  // Persist to localStorage whenever paths change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(paths))
+    } catch (error) {
+      console.error('Failed to save to localStorage:', error)
+    }
+  }, [paths])
 
   const updateSectionDeadline = (pathId: string, sectionId: string, deadline: string | null) => {
     setPaths((prev) =>
