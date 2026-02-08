@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Circle, Lock, ChevronRight } from "lucide-react"
 import { useLearningData } from "@/lib/mock-data-context"
@@ -60,10 +61,14 @@ export function PathSidebar({ pathId }: PathSidebarProps) {
                           )}
                         </div>
                         <div className="flex-1 text-left min-w-0">
-                          <div className="text-sm font-medium">{section.code}</div>
-                          <div className="text-xs text-muted-foreground truncate">{section.name}</div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-xs shrink-0">
+                              {section.code}
+                            </Badge>
+                            <span className="text-sm truncate">{section.name}</span>
+                          </div>
                           {section.deadline && (
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-muted-foreground mt-1">
                               Due {format(new Date(section.deadline), "MMM d")}
                             </div>
                           )}

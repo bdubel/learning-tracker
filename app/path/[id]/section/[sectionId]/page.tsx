@@ -66,13 +66,15 @@ export default function SectionPage({ params }: { params: Promise<{ id: string; 
         <div className="mb-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-3 mb-3">
                 <Badge variant="secondary">{section.code}</Badge>
+                <h1 className="text-3xl font-bold tracking-tight">{section.name}</h1>
+              </div>
+              <div className="flex items-center gap-2 mb-3">
                 {isOverdue && <Badge variant="destructive">Overdue</Badge>}
                 {isDueSoon && !isOverdue && <Badge variant="destructive">Due Soon</Badge>}
               </div>
-              <h1 className="text-3xl font-bold tracking-tight">{section.name}</h1>
-              <div className="flex items-center gap-3 mt-3">
+              <div className="flex items-center gap-3">
                 <DeadlinePicker
                   deadline={section.deadline}
                   onDeadlineChange={handleDeadlineChange}

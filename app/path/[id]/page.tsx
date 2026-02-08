@@ -80,12 +80,12 @@ export default function LearningPathPage({ params }: { params: Promise<{ id: str
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold">Learning Path</h2>
 
-          {path.units.map((unit) => (
+          {path.units.map((unit, unitIndex) => (
             <Card key={unit.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle>{unit.name}</CardTitle>
+                    <CardTitle>Unit {unitIndex + 1}: {unit.name}</CardTitle>
                     {unit.completeBy && (
                       <CardDescription>Complete by {formatDate(unit.completeBy)}</CardDescription>
                     )}
@@ -120,9 +120,14 @@ export default function LearningPathPage({ params }: { params: Promise<{ id: str
                                 <Lock className="h-5 w-5 text-muted-foreground" />
                               )}
                               <div className="text-left">
-                                <div className="font-medium">{section.name}</div>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {section.code}
+                                  </Badge>
+                                  <span className="font-medium">{section.name}</span>
+                                </div>
                                 {section.deadline && (
-                                  <div className="text-sm text-muted-foreground">
+                                  <div className="text-sm text-muted-foreground mt-1">
                                     Due {formatDate(section.deadline)}
                                   </div>
                                 )}
