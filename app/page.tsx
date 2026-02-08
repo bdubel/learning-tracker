@@ -127,36 +127,39 @@ export default function Home() {
 function SectionCard({ item }: { item: { section: any; daysUntil: number; isNext: boolean } }) {
   const { section, daysUntil } = item
   const deadline = new Date(section.deadline!)
+  const showBadge = Math.abs(daysUntil) < 30
 
   return (
     <Link href={`/path/${section.pathId}/section/${section.id}`}>
       <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between gap-4">
+        <CardContent className="px-3 py-1.5">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">
                 {section.pathName}
               </div>
-              <h3 className="font-medium text-sm">{section.name}</h3>
+              <h3 className="font-medium text-sm leading-tight">{section.name}</h3>
             </div>
-            <div className="flex flex-col items-end shrink-0 text-xs text-muted-foreground gap-0.5">
-              <div>
+            <div className="flex items-center gap-2 shrink-0 text-xs">
+              {showBadge && (
+                <span className={`font-medium ${daysUntil < 3 && daysUntil >= 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                  {daysUntil < 0
+                    ? `${Math.abs(daysUntil)}d overdue`
+                    : daysUntil === 0
+                    ? "Today"
+                    : daysUntil === 1
+                    ? "Tomorrow"
+                    : `${daysUntil}d`
+                  }
+                </span>
+              )}
+              <span className="text-muted-foreground">
                 {deadline.toLocaleDateString('en-US', {
                   weekday: 'short',
                   month: 'short',
                   day: 'numeric'
                 })}
-              </div>
-              <div className={daysUntil < 3 && daysUntil >= 0 ? "text-destructive font-medium" : ""}>
-                {daysUntil < 0
-                  ? `${Math.abs(daysUntil)}d overdue`
-                  : daysUntil === 0
-                  ? "Today"
-                  : daysUntil === 1
-                  ? "Tomorrow"
-                  : `${daysUntil}d`
-                }
-              </div>
+              </span>
             </div>
           </div>
         </CardContent>
