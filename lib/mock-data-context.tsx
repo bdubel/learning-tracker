@@ -159,7 +159,7 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
 
   const getWeeklyItems = () => {
     const today = new Date()
-    const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+    const twoWeeksFromNow = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000)
     const items: Array<{ section: Section; daysUntil: number }> = []
 
     paths.forEach((path) => {
@@ -169,8 +169,8 @@ export function LearningDataProvider({ children }: { children: ReactNode }) {
             const deadline = new Date(section.deadline)
             const daysUntil = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
-            // Include if due within the next week or overdue
-            if (deadline <= weekFromNow || daysUntil < 0) {
+            // Include if due within the next two weeks or overdue
+            if (deadline <= twoWeeksFromNow || daysUntil < 0) {
               items.push({ section, daysUntil })
             }
           }
