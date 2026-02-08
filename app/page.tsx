@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { useLearningData } from "@/lib/mock-data-context"
 
 function getWeekOfYear(date: Date): number {
@@ -81,24 +81,18 @@ export default function Home() {
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="container mx-auto py-6 px-8 max-w-4xl">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold tracking-tight">Home</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">
-            Your upcoming deadlines grouped by week
-          </p>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold">Home</h1>
+          <p className="text-sm text-muted-foreground">Your upcoming deadlines</p>
         </div>
 
         {allItems.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              <p className="text-muted-foreground">No upcoming deadlines</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                You're all caught up!
-              </p>
-            </CardContent>
-          </Card>
+          <div className="text-center py-12 text-muted-foreground">
+            <p>No upcoming deadlines</p>
+            <p className="text-sm mt-1">You're all caught up!</p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {sortedWeeks.map(([weekKey, items]) => {
               const firstItem = items[0]
               const deadline = new Date(firstItem.section.deadline!)
@@ -106,12 +100,12 @@ export default function Home() {
 
               return (
                 <section key={weekKey}>
-                  <h2 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                     {getWeekLabel(weekStart)}
                   </h2>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {items.map(item => (
-                      <SectionCard key={item.section.id} item={item} />
+                      <SectionItem key={item.section.id} item={item} />
                     ))}
                   </div>
                 </section>
@@ -124,46 +118,45 @@ export default function Home() {
   )
 }
 
-function SectionCard({ item }: { item: { section: any; daysUntil: number; isNext: boolean } }) {
+function SectionItem({ item }: { item: { section: any; daysUntil: number; isNext: boolean } }) {
   const { section, daysUntil } = item
   const deadline = new Date(section.deadline!)
-  const showBadge = Math.abs(daysUntil) < 30
+  const showRelativeTime = Math.abs(daysUntil) < 30
+
+  const relativeTime = daysUntil < 0
+    ? `${Math.abs(daysUntil)}d overdue`
+    : daysUntil === 0
+    ? "Today"
+    : daysUntil === 1
+    ? "Tomorrow"
+    : `${daysUntil}d`
+
+  const isUrgent = daysUntil < 3 && daysUntil >= 0
 
   return (
     <Link href={`/path/${section.pathId}/section/${section.id}`}>
-      <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-        <CardContent className="px-3 py-1.5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">
-                {section.pathName}
-              </div>
-              <h3 className="font-medium text-sm leading-tight">{section.name}</h3>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 text-xs">
-              {showBadge && (
-                <span className={`font-medium ${daysUntil < 3 && daysUntil >= 0 ? "text-destructive" : "text-muted-foreground"}`}>
-                  {daysUntil < 0
-                    ? `${Math.abs(daysUntil)}d overdue`
-                    : daysUntil === 0
-                    ? "Today"
-                    : daysUntil === 1
-                    ? "Tomorrow"
-                    : `${daysUntil}d`
-                  }
-                </span>
-              )}
-              <span className="text-muted-foreground">
-                {deadline.toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </span>
-            </div>
+      <div className="flex items-center justify-between py-2 px-3 rounded-md border bg-card hover:bg-accent/50 transition-colors">
+        <div className="flex-1 min-w-0">
+          <div className="text-xs text-muted-foreground uppercase tracking-wide">
+            {section.pathName}
           </div>
-        </CardContent>
-      </Card>
+          <div className="font-medium text-sm">{section.name}</div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 text-xs ml-4">
+          {showRelativeTime && (
+            <Badge variant={isUrgent ? "destructive" : "secondary"} className="font-normal">
+              {relativeTime}
+            </Badge>
+          )}
+          <span className="text-muted-foreground whitespace-nowrap">
+            {deadline.toLocaleDateString('en-US', {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </span>
+        </div>
+      </div>
     </Link>
   )
 }
